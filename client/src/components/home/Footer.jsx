@@ -95,31 +95,7 @@ const Footer = () => {
           </p>
           <div className="flex items-center gap-4 mt-3">
             <a
-              href="https://dribbble.com/Elysee_14"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-dribbble size-5 hover:text-green-500"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M19.13 5.09C15.22 9.14 10 10.44 2.25 10.94"></path>
-                <path d="M21.75 12.84c-6.62-1.41-12.14 1-16.38 6.32"></path>
-                <path d="M8.56 2.75c4.37 6 6 9.42 8 17.72"></path>
-              </svg>
-            </a>
-            <a
-              href="https://www.linkedin.com/in/niyibizi-elys%C3%A9e/"
+              href="https://www.linkedin.com/in/ashwin-khadka-96a7362b8"
               target="_blank"
               rel="noreferrer"
             >
@@ -142,28 +118,7 @@ const Footer = () => {
               </svg>
             </a>
             <a
-              href="https://twitter.com/Niyibizi_Elyse"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-twitter size-5 hover:text-green-500"
-                aria-hidden="true"
-              >
-                <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
-              </svg>
-            </a>
-            <a
-              href="https://www.youtube.com/channel/UCFak6PPRUK9-AB_-zeDgzkg"
+              href="https://www.youtube.com/@Ashwin_21"
               target="_blank"
               rel="noreferrer"
             >
@@ -187,12 +142,6 @@ const Footer = () => {
           </div>
           <p className="mt-3 text-center">
             © {new Date().getFullYear()} Resume Builder -{" "}
-            <a
-              className="font-medium italic text-green-500 hover:underline hover:text-green-500/80 transition"
-              href="https://elyseedev.netlify.app"
-            >
-              ElyséeDev
-            </a>
           </p>
         </div>
       </footer>
