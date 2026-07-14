@@ -9,26 +9,29 @@ const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const generateSummary = async () => {
-    try {
-      setIsGenerating(true);
-      const prompt = `enhance my professional summary "${data}"`;
+      try {
+        setIsGenerating(true);
+        
+        // Target the absolute backend URL and send the matching payload keys
+        const response = await api.post(
+          "http://localhost:5000/api/ai/enhanced-pro-sum", 
+          { 
+            jobTitle: data?.personal_info?.title || "", // Grabs current job title if available
+            summary: data || "" // The prompt string from the text area
+          },
+          { headers: { Authorization: token } } 
+        );
 
-      const response = await api.post(
-        "/api/ai/enhanced-pro-sum",
-        { userContent: prompt },
-        { headers: { Authorization: token } }
-      );
-
-      setResumeData((prev) => ({
-        ...prev,
-        professional_summary: response.data.enhancedContent,
-      }));
-    } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
+        setResumeData((prev) => ({
+          ...prev,
+          professional_summary: response.data.enhancedContent,
+        }));
+      } catch (error) {
+        toast.error(error?.response?.data?.message || error.message);
+      } finally {
+        setIsGenerating(false);
+      }
+    };
 
   return (
     <div className="space-y-4">

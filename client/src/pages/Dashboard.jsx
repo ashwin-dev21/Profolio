@@ -19,7 +19,7 @@ const Dashboard = () => {
   const { user, token } = useSelector((state) => state.auth);
 
   const colors = ["#9333ea", "#d97706", "#dc2626", "#0284c7", "#16a34a"];
-  const [allResumes, setAllResumes] = useState([]);
+  const [allResumes, setAllResumes] = useState([]); // Defaults safely to an array
   const [showCreateResume, setShowCreateResume] = useState(false);
   const [showUploadResume, setShowUploadResume] = useState(false);
   const [title, setTitle] = useState("");
@@ -30,14 +30,19 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
+  // BASE URL helper to keep endpoints targeting the correct backend server port
+  const BACKEND_URL = "http://localhost:5000";
+
   const loadAllResumes = async () => {
     try {
-      const { data } = await api.get("/api/users/resumes", {
+      const { data } = await api.get(`${BACKEND_URL}/api/users/resumes`, {
         headers: { Authorization: token },
       });
 
-      setAllResumes(data.resumes);
+      // Added defensive fallback check to ensure state strictly remains an array
+      setAllResumes(Array.isArray(data.resumes) ? data.resumes : []);
     } catch (error) {
+      setAllResumes([]); // Resets safely to prevent map breakdown upon structural failure
       toast.error(error?.response?.data?.message || error.message);
     }
   };
@@ -46,12 +51,13 @@ const Dashboard = () => {
     try {
       event.preventDefault();
       const { data } = await api.post(
-        "/api/resumes/create",
+        `${BACKEND_URL}/api/resumes/create`,
         { title },
         { headers: { Authorization: token } }
       );
 
-      setAllResumes([...allResumes, data.resume]);
+      // Ensures structural preservation during item addition
+      setAllResumes([...(Array.isArray(allResumes) ? allResumes : []), data.resume]);
       setTitle("");
       setShowCreateResume(false);
       navigate(`/app/builder/${data.resume._id}`);
@@ -68,7 +74,7 @@ const Dashboard = () => {
       const resumeText = await pdfToText(resume);
 
       const { data } = await api.post(
-        "/api/ai/upload-resume",
+        `${BACKEND_URL}/api/ai/upload-resume`,
         { title, resumeText },
         { headers: { Authorization: token } }
       );
@@ -88,18 +94,20 @@ const Dashboard = () => {
     try {
       event.preventDefault();
       const { data } = await api.put(
-        "/api/resumes/update",
+        `${BACKEND_URL}/api/resumes/update`,
         { resumeId: editResumeId, resumeData: { title } },
         {
           headers: { Authorization: token },
         }
       );
 
-      setAllResumes(
-        allResumes.map((resume) =>
-          resume._id === editResumeId ? { ...resume, title } : resume
-        )
-      );
+      if (Array.isArray(allResumes)) {
+        setAllResumes(
+          allResumes.map((resume) =>
+            resume._id === editResumeId ? { ...resume, title } : resume
+          )
+        );
+      }
       setTitle("");
       setEditResumeId("");
 
@@ -115,11 +123,13 @@ const Dashboard = () => {
         "Are you sure you want to delete this resume?"
       );
       if (confirm) {
-        const { data } = await api.delete(`/api/resumes/delete/${resumeId}`, {
+        const { data } = await api.delete(`${BACKEND_URL}/api/resumes/delete/${resumeId}`, {
           headers: { Authorization: token },
         });
 
-        setAllResumes(allResumes.filter((resume) => resume._id !== resumeId));
+        if (Array.isArray(allResumes)) {
+          setAllResumes(allResumes.filter((resume) => resume._id !== resumeId));
+        }
 
         toast.success(data.message);
       }
@@ -136,7 +146,7 @@ const Dashboard = () => {
     <div>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <p className="text-2xl font-medium mb-6 bg-linear-to-r from-slate-600 to-slate-700 bg-clip-text text-transparent sm:hidden">
-          Welcome, John Doe
+          Welcome, {user?.name || "User"}
         </p>
 
         <div className="flex gap-4">
@@ -164,11 +174,12 @@ const Dashboard = () => {
         <hr className="border-slate-300 my-6 sm:w-76.25" />
 
         <div className="grid grid-cols-2 sm:flex flex-wrap gap-4">
-          {allResumes.map((resume, index) => {
+          {/* Optional chaining handles structural evaluation securely */}
+          {allResumes?.map((resume, index) => {
             const baseColor = colors[index % colors.length];
             return (
               <button
-                key={index}
+                key={resume._id || index}
                 onClick={() => navigate(`/app/builder/${resume._id}`)}
                 className="relative w-full sm:max-w-36 h-48 flex flex-col items-center justify-center rounded-lg gap-2 border group hover:shadow-lg transition-all duration-300 cursor-pointer"
                 style={{
@@ -192,7 +203,7 @@ const Dashboard = () => {
                   className="absolute bottom-1 text-[11px] text-slate-400 group-hover:text-slate-500 transition-all duration-300 px-2 text-center"
                   style={{ color: baseColor + "90" }}
                 >
-                  Updated on {new Date(resume.updatedAt).toLocaleDateString()}
+                  Updated on {resume.updatedAt ? new Date(resume.updatedAt).toLocaleDateString() : "N/A"}
                 </p>
 
                 <div
@@ -232,11 +243,11 @@ const Dashboard = () => {
                 value={title}
                 type="text"
                 placeholder="Enter resume title"
-                className="w-full px-4 py-2 mb-4 focus:border-green-600 ring-green-600"
+                className="w-full px-4 py-2 mb-4 focus:border-green-600 ring-green-600 outline-hidden border border-slate-300 rounded"
                 required
               />
 
-              <button className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+              <button className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors cursor-pointer">
                 Create Resume
               </button>
 
@@ -267,7 +278,7 @@ const Dashboard = () => {
                 value={title}
                 type="text"
                 placeholder="Enter resume title"
-                className="w-full px-4 py-2 mb-4 focus:border-green-600 ring-green-600"
+                className="w-full px-4 py-2 mb-4 focus:border-green-600 ring-green-600 outline-hidden border border-slate-300 rounded"
                 required
               />
 
@@ -279,7 +290,7 @@ const Dashboard = () => {
                   Select resume file
                   <div className="flex flex-col items-center justify-center gap-2 border group text-slate-400 border-slate-400 border-dashed rounded-md p-4 py-10 my-4 hover:border-green-500 hover:text-green-700 cursor-pointer transition-colors">
                     {resume ? (
-                      <p className="text-green-700">{resume.name}</p>
+                      <p className="text-green-700 font-medium">{resume.name}</p>
                     ) : (
                       <>
                         <UploadCloud className="size-14 stroke-1" />
@@ -299,7 +310,7 @@ const Dashboard = () => {
 
               <button
                 disabled={isLoading}
-                className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 {isLoading && (
                   <LoaderCircleIcon className="animate-spin size-4 text-white" />
@@ -312,6 +323,7 @@ const Dashboard = () => {
                 onClick={() => {
                   setShowUploadResume(false);
                   setTitle("");
+                  setResume(null);
                 }}
               />
             </div>
@@ -334,11 +346,11 @@ const Dashboard = () => {
                 value={title}
                 type="text"
                 placeholder="Enter resume title"
-                className="w-full px-4 py-2 mb-4 focus:border-green-600 ring-green-600"
+                className="w-full px-4 py-2 mb-4 focus:border-green-600 ring-green-600 outline-hidden border border-slate-300 rounded"
                 required
               />
 
-              <button className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors">
+              <button className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors cursor-pointer">
                 Update
               </button>
 

@@ -4,16 +4,7 @@ import { Link } from "react-router-dom";
 
 const Hero = () => {
   const { user } = useSelector((state) => state.auth);
-
   const [menuOpen, setMenuOpen] = React.useState(false);
-
-  const logos = [
-    "https://saasly.prebuiltui.com/assets/companies-logo/instagram.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/framer.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/microsoft.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/huawei.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/walmart.svg",
-  ];
 
   return (
     <>
@@ -230,21 +221,36 @@ const Hero = () => {
           </div>
 
           <p className="py-6 text-slate-600 mt-14">
-            Trusting by leading brands, including
+            Trusted by leading brands, including
           </p>
 
+          {/* Clean, pure vector SVGs styled globally with standard Tailwind slate fills */}
           <div
-            className="flex flex-wrap justify-between max-sm:justify-center gap-6 max-w-3xl w-full mx-auto py-4"
+            className="flex flex-wrap justify-center gap-12 md:gap-16 max-w-3xl w-full mx-auto py-4 items-center fill-slate-400 text-slate-400 opacity-50"
             id="logo-container"
           >
-            {logos.map((logo, index) => (
-              <img
-                key={index}
-                src={logo}
-                alt="logo"
-                className="h-6 w-auto max-w-xs"
-              />
-            ))}
+            {/* Google */}
+            <svg className="h-6 w-auto" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09zM12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23zM5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22c-.87-2.6-2.87-4.53-6.16-4.53zM12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+
+            {/* Microsoft */}
+            <svg className="h-5 w-auto" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="11" height="11" />
+              <rect x="12" y="0" width="11" height="11" />
+              <rect x="0" y="12" width="11" height="11" />
+              <rect x="12" y="12" width="11" height="11" />
+            </svg>
+
+            {/* Apple */}
+            <svg className="h-6 w-auto" viewBox="0 0 170 170" xmlns="http://www.w3.org/2000/svg">
+              <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.38.13-9.13-1.78-14.21-5.74-3.56-2.77-7.46-7.51-11.69-14.21-9.66-15.21-16.18-31.42-19.57-48.65-2.22-11.24-3.33-21.94-3.33-32.1 0-16.15 3.82-29.83 11.45-41.03 6.81-10.05 15.61-15.19 26.41-15.42 4.41 0 9.53 1.34 15.38 4.02 5.85 2.68 9.77 4.02 11.75 4.02 1.45 0 5.41-1.39 11.88-4.18 6.47-2.78 11.58-4.11 15.34-3.97 14.16.59 25.16 5.86 32.99 15.82-11.52 6.99-17.18 16.59-16.97 28.8 0 9.8 3.65 18.04 10.94 24.71 7.29 6.67 16.17 10.42 26.65 11.26-2.31 6.87-5.59 13.78-9.83 20.73zM119.5 33.72c0-7.79 2.76-14.99 8.29-21.6A43.43 43.43 0 0 0 117.13 0c-8.45.39-16.29 3.73-23.51 10.03-6.2 5.37-10.84 12.19-13.91 20.47 7.92.59 15.06-2.18 21.43-8.32 5.61-5.4 8.36-12.19 8.36-20.46z"/>
+            </svg>
+
+            {/* Amazon */}
+            <svg className="h-6 w-auto" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16.035 15.155c-.502.39-1.298.814-1.905.814-.954 0-1.127-.585-1.127-1.456v-4.162c0-1.257-.044-2.818-1.864-2.818-1.777 0-2.037 1.474-2.037 2.73v4.25c0 .872-.217 1.456-1.127 1.456-.563 0-1.256-.347-1.777-.814L5 16.262c.78.694 1.864 1.127 3.034 1.127 2.167 0 2.861-1.387 2.861-3.25v-3.772c0-.737.174-1.344.91-1.344.78 0 .867.52.867 1.344v3.772c0 1.863.694 3.25 2.86 3.25 1.171 0 2.255-.433 3.035-1.127l-1.532-1.107zM22.564 15.11a5.9 5.9 0 0 1-3.415 1.112c-2.32 0-3.953-1.47-3.953-3.987 0-2.73 1.864-4.25 4.343-4.25 2.124 0 3.165 1.17 3.165 3.033v.78h-5.462c.087 1.257.824 1.95 2.037 1.95a3.633 3.633 0 0 0 2.125-.736l1.16.898zm-1.95-3.033c-.043-.91-.433-1.43-1.256-1.43-.824 0-1.214.52-1.3 1.43h2.556zM1.387 18.82C6.155 21.64 12.31 23 18.553 23c2.08 0 4.12-.173 6.11-.52a.37.37 0 0 0 .26-.52.394.394 0 0 0-.434-.217c-1.863.303-3.77.477-5.72.477-5.938 0-11.833-1.257-16.386-3.945a.434.434 0 0 0-.563.13c-.173.26-.043.564.165.715z"/>
+            </svg>
           </div>
         </div>
       </div>

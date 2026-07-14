@@ -80,7 +80,7 @@ const ResumeBuilder = () => {
     loadExistingResume();
   }, []);
 
-  const changeResumeVisibility = async () => {
+const changeResumeVisibility = async () => {
     try {
       const formData = new FormData();
       formData.append("resumeId", resumeId);
@@ -89,14 +89,19 @@ const ResumeBuilder = () => {
         JSON.stringify({ public: !resumeData.public })
       );
 
-      const { data } = await api.put("/api/resumes/update", formData, {
-        headers: { Authorization: token },
+      // Explicit routing to port 5000 with Multipart form headers added
+      const { data } = await api.put("http://localhost:5000/api/resumes/update", formData, {
+        headers: { 
+          Authorization: token,
+          "Content-Type": "multipart/form-data"
+        },
       });
 
       setResumeData({ ...resumeData, public: !resumeData.public });
       toast.success(data.message);
     } catch (error) {
-      console.error("Error saving resume:", error);
+      console.error("Error saving resume visibility:", error);
+      toast.error(error?.response?.data?.message || error.message);
     }
   };
 
@@ -115,11 +120,11 @@ const ResumeBuilder = () => {
     window.print();
   };
 
-  const saveResume = async () => {
+const saveResume = async () => {
     try {
       let updatedResumeData = structuredClone(resumeData);
 
-      // remove image from updatedResumeData
+      // remove image object instance safely to clean structural parsing layers
       if (typeof resumeData.personal_info.image === "object") {
         delete updatedResumeData.personal_info.image;
       }
@@ -128,17 +133,25 @@ const ResumeBuilder = () => {
       formData.append("resumeId", resumeId);
       formData.append("resumeData", JSON.stringify(updatedResumeData));
       removeBackground && formData.append("removeBackground", "yes");
-      typeof resumeData.personal_info.image === "object" &&
+      
+      if (resumeData.personal_info.image && typeof resumeData.personal_info.image === "object") {
         formData.append("image", resumeData.personal_info.image);
+      }
 
-      const { data } = await api.put("/api/resumes/update", formData, {
-        headers: { Authorization: token },
+      // Route pointing directly to port 5000 matching server setup configurations
+      const { data } = await api.put("http://localhost:5000/api/resumes/update", formData, {
+        headers: { 
+          Authorization: token,
+          "Content-Type": "multipart/form-data"
+        },
       });
 
       setResumeData(data.resume);
       toast.success(data.message);
     } catch (error) {
-      console.error("Error saving resume:", error);
+      console.error("Error saving resume details:", error);
+      toast.error(error?.response?.data?.message || error.message);
+      throw error; // Essential so toast.promise catches rejection
     }
   };
 
