@@ -5,10 +5,16 @@ import Resume from "../models/Resume.js";
 // POST: /api/ai/enhance-pro-sum
 export const enhanceProfessionalSummary = async (req, res) => {
   try {
+    console.log("========== AI SUMMARY ==========");
+    console.log("Headers:", req.headers);
+    console.log("Body:", req.body);
+
     const { userContent } = req.body;
 
-    if (!userContent) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!userContent || userContent.trim() === "") {
+      return res.status(400).json({
+        message: "Professional summary cannot be empty.",
+      });
     }
 
     const response = await ai.chat.completions.create({
@@ -17,7 +23,7 @@ export const enhanceProfessionalSummary = async (req, res) => {
         {
           role: "system",
           content:
-            "You are an expert in resume writing. Your task is to enhance the professional summary of a resume. The summary should be 1-2 sentences also highlighting key skills, experience, and career objectives. Make it compelling and ATS-friendly. And only return text no options or anything else.",
+            "You are an expert resume writer. Improve the following professional summary. Keep it ATS-friendly, professional, concise (2-4 sentences), and return ONLY the improved summary.",
         },
         {
           role: "user",
@@ -26,11 +32,15 @@ export const enhanceProfessionalSummary = async (req, res) => {
       ],
     });
 
-    const enhancedContent = response.choices[0].message.content;
-
-    return res.status(200).json({ enhancedContent });
+    return res.status(200).json({
+      enhancedContent: response.choices[0].message.content,
+    });
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    console.error("AI Summary Error:", error);
+
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 

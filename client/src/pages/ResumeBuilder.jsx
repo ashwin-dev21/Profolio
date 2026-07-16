@@ -30,7 +30,6 @@ import toast from "react-hot-toast";
 
 const ResumeBuilder = () => {
   const { resumeId } = useParams();
-
   const { token } = useSelector((state) => state.auth);
 
   const [resumeData, setResumeData] = useState({
@@ -47,23 +46,12 @@ const ResumeBuilder = () => {
     public: false,
   });
 
-  const loadExistingResume = async () => {
-    try {
-      const { data } = await api.get(`/api/resumes/get/${resumeId}`, {
-        headers: { Authorization: token },
-      });
-
-      if (data.resume) {
-        setResumeData(data.resume);
-        document.title = data.resume.title;
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [removeBackground, setRemoveBackground] = useState(false);
+
+  // New states
+  const [loadingResume, setLoadingResume] = useState(true);
+  // const [isSaving, setIsSaving] = useState(false);
 
   const sections = [
     { id: "personal", name: "Personal Info", icon: User },
@@ -76,32 +64,140 @@ const ResumeBuilder = () => {
 
   const activeSection = sections[activeSectionIndex];
 
-  useEffect(() => {
-    loadExistingResume();
-  }, []);
-
-const changeResumeVisibility = async () => {
+  // ===========================
+  // LOAD RESUME
+  // ===========================
+  const loadExistingResume = async () => {
     try {
-      const formData = new FormData();
-      formData.append("resumeId", resumeId);
-      formData.append(
-        "resumeData",
-        JSON.stringify({ public: !resumeData.public })
-      );
-
-      // Explicit routing to port 5000 with Multipart form headers added
-      const { data } = await api.put("http://localhost:5000/api/resumes/update", formData, {
-        headers: { 
+      const { data } = await api.get(`http://localhost:5000/api/resumes/get/${resumeId}`, {
+        headers: {
           Authorization: token,
-          "Content-Type": "multipart/form-data"
         },
       });
 
-      setResumeData({ ...resumeData, public: !resumeData.public });
+      if (data.resume) {
+        setResumeData(data.resume);
+        document.title = data.resume.title;
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoadingResume(false);
+    }
+  };
+
+  useEffect(() => {
+    if (resumeId) {
+      loadExistingResume();
+    }
+  }, []);
+
+  // ===========================
+  // SAVE RESUME
+  // ===========================
+  const saveResume = async (showToast = false) => {
+
+    try {
+      setIsSaving(true);
+
+      let updatedResumeData = structuredClone(resumeData);
+
+      if (
+        updatedResumeData.personal_info?.image &&
+        typeof updatedResumeData.personal_info.image === "object"
+      ) {
+        delete updatedResumeData.personal_info.image;
+      }
+
+      const formData = new FormData();
+
+      formData.append("resumeId", resumeId);
+      formData.append(
+        "resumeData",
+        JSON.stringify(updatedResumeData)
+      );
+
+      if (removeBackground) {
+        formData.append("removeBackground", "yes");
+      }
+
+      if (
+        resumeData.personal_info?.image &&
+        typeof resumeData.personal_info.image === "object"
+      ) {
+        formData.append(
+          "image",
+          resumeData.personal_info.image
+        );
+      }
+
+      const { data } = await api.put(
+        "http://localhost:5000/api/resumes/update",
+        formData,
+        {
+          headers: {
+            Authorization: token,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setResumeData(data.resume);
+
+      if (showToast) {
+        toast.success(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+
+      if (showToast) {
+        toast.error(
+          error?.response?.data?.message || error.message
+        );
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+
+  // ===========================
+  // CHANGE VISIBILITY
+  // ===========================
+  const changeResumeVisibility = async () => {
+    try {
+      const formData = new FormData();
+
+      formData.append("resumeId", resumeId);
+
+      formData.append(
+        "resumeData",
+        JSON.stringify({
+          public: !resumeData.public,
+        })
+      );
+
+      const { data } = await api.put(
+        "http://localhost:5000/api/resumes/update",
+        formData,
+        {
+          headers: {
+            Authorization: token,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setResumeData((prev) => ({
+        ...prev,
+        public: !prev.public,
+      }));
+
       toast.success(data.message);
     } catch (error) {
-      console.error("Error saving resume visibility:", error);
-      toast.error(error?.response?.data?.message || error.message);
+      toast.error(
+        error?.response?.data?.message || error.message
+      );
     }
   };
 
@@ -110,49 +206,17 @@ const changeResumeVisibility = async () => {
     const resumeUrl = frontendUrl + "/view/" + resumeId;
 
     if (navigator.share) {
-      navigator.share({ url: resumeUrl, text: "My Resume" });
+      navigator.share({
+        url: resumeUrl,
+        text: "My Resume",
+      });
     } else {
-      alert("Share not supported on this browser.");
+      alert("Share not supported.");
     }
   };
 
   const downloadResume = () => {
     window.print();
-  };
-
-const saveResume = async () => {
-    try {
-      let updatedResumeData = structuredClone(resumeData);
-
-      // remove image object instance safely to clean structural parsing layers
-      if (typeof resumeData.personal_info.image === "object") {
-        delete updatedResumeData.personal_info.image;
-      }
-
-      const formData = new FormData();
-      formData.append("resumeId", resumeId);
-      formData.append("resumeData", JSON.stringify(updatedResumeData));
-      removeBackground && formData.append("removeBackground", "yes");
-      
-      if (resumeData.personal_info.image && typeof resumeData.personal_info.image === "object") {
-        formData.append("image", resumeData.personal_info.image);
-      }
-
-      // Route pointing directly to port 5000 matching server setup configurations
-      const { data } = await api.put("http://localhost:5000/api/resumes/update", formData, {
-        headers: { 
-          Authorization: token,
-          "Content-Type": "multipart/form-data"
-        },
-      });
-
-      setResumeData(data.resume);
-      toast.success(data.message);
-    } catch (error) {
-      console.error("Error saving resume details:", error);
-      toast.error(error?.response?.data?.message || error.message);
-      throw error; // Essential so toast.promise catches rejection
-    }
   };
 
   return (
@@ -219,17 +283,19 @@ const saveResume = async () => {
                   )}
 
                   <button
-                    onClick={() =>
+                    onClick={async () => {
+                      await saveResume(true);
+
                       setActiveSectionIndex((prevIndex) =>
                         Math.min(prevIndex + 1, sections.length - 1)
-                      )
-                    }
+                      );
+                    }}
                     className={`flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all ${
                       activeSectionIndex === sections.length - 1 && "opacity-50"
                     }`}
-                    disabled={activeSectionIndex === sections.length - 1}
+                    disabled={activeSectionIndex === sections.length - 1 || isSaving}
                   >
-                    Next <ChevronRight className="size-4" />
+                    {isSaving ? "Saving..." : <>Next <ChevronRight className="size-4" /></>}
                   </button>
                 </div>
               </div>
@@ -311,11 +377,8 @@ const saveResume = async () => {
                   />
                 )}
               </div>
-
               <button
-                onClick={() => {
-                  toast.promise(saveResume, { loading: "Saving..." });
-                }}
+                onClick={() => saveResume(true)}
                 className="bg-linear-to-br from-green-100 to-green-200 ring-green-300 text-green-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm"
               >
                 Save Changes

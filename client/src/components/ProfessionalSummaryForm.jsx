@@ -15,10 +15,9 @@ const ProfessionalSummaryForm = ({ data, onChange, setResumeData }) => {
         // Target the absolute backend URL and send the matching payload keys
         const response = await api.post(
           "http://localhost:5000/api/ai/enhanced-pro-sum", 
-          { 
-            jobTitle: data?.personal_info?.title || "", // Grabs current job title if available
-            summary: data || "" // The prompt string from the text area
-          },
+         {
+    userContent: data || "",
+  },
           { headers: { Authorization: token } } 
         );
 

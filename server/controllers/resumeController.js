@@ -61,6 +61,7 @@ export const getResumeById = async (req, res) => {
     return res.status(200).json({ resume });
   } catch (error) {
     return res.status(400).json({ message: error.message });
+    console.log(error.response?.data);
   }
 };
 
@@ -81,6 +82,7 @@ export const getPublicResumeById = async (req, res) => {
     return res.status(200).json({ resume });
   } catch (error) {
     return res.status(400).json({ message: error.message });
+    console.log(error.response?.data);
   }
 };
 
@@ -116,15 +118,15 @@ export const updateResume = async (req, res) => {
       resumeDataCopy.personal_info.image = response.url;
     }
 
-    const resume = await Resume.findByIdAndUpdate(
-      { userId, _id: resumeId },
-      resumeDataCopy,
-      { new: true }
-    );
+  const resume = await Resume.findOneAndUpdate(
+    { _id: resumeId, userId },
+    resumeDataCopy,
+    { new: true }
+  );
 
     // return success message and updated resume
     return res.status(200).json({ message: "Saved successfully", resume });
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    console.log(error.response?.data);
   }
 };
