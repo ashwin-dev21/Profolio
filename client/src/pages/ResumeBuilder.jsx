@@ -51,7 +51,7 @@ const ResumeBuilder = () => {
 
   // New states
   const [loadingResume, setLoadingResume] = useState(true);
-  // const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const sections = [
     { id: "personal", name: "Personal Info", icon: User },
