@@ -13,7 +13,7 @@ const CallToAction = () => {
           </p>
           <Link
             to="/app?state=register"
-            className="flex items-center gap-2 rounded py-3 px-8 bg-green-600 hover:bg-green-700 transition text-white"
+            className="flex items-center gap-2 rounded py-3 px-8 bg-blue-600 hover:bg-blue-700 transition text-white"
           >
             <span>Get Started</span>
             <svg

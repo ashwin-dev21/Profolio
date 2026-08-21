@@ -18,22 +18,17 @@ const Footer = () => {
             <p className="text-slate-800 font-semibold">Product</p>
             <ul className="mt-2 space-y-2">
               <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   Home
                 </a>
               </li>
               <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   Support
                 </a>
               </li>
               <li>
-                <a href="/" className="hover:text-green-600 transition">
-                  Pricing
-                </a>
-              </li>
-              <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   Affiliate
                 </a>
               </li>
@@ -43,30 +38,30 @@ const Footer = () => {
             <p className="text-slate-800 font-semibold">Resources</p>
             <ul className="mt-2 space-y-2">
               <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   Company
                 </a>
               </li>
               <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   Blogs
                 </a>
               </li>
               <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   Community
                 </a>
               </li>
               <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   Careers
-                  <span className="text-xs text-white bg-green-600 rounded-md ml-2 px-2 py-1">
+                  <span className="text-xs text-white bg-blue-600 rounded-md ml-2 px-2 py-1">
                     We’re hiring!
                   </span>
                 </a>
               </li>
               <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   About
                 </a>
               </li>
@@ -76,12 +71,12 @@ const Footer = () => {
             <p className="text-slate-800 font-semibold">Legal</p>
             <ul className="mt-2 space-y-2">
               <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   Privacy
                 </a>
               </li>
               <li>
-                <a href="/" className="hover:text-green-600 transition">
+                <a href="/" className="hover:text-blue-600 transition">
                   Terms
                 </a>
               </li>
@@ -109,7 +104,7 @@ const Footer = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-linkedin size-5 hover:text-green-500"
+                className="lucide lucide-linkedin size-5 hover:text-blue-500"
                 aria-hidden="true"
               >
                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
@@ -132,7 +127,7 @@ const Footer = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-youtube size-6 hover:text-green-500"
+                className="lucide lucide-youtube size-6 hover:text-blue-500"
                 aria-hidden="true"
               >
                 <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"></path>
