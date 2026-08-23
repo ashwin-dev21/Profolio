@@ -52,7 +52,6 @@ export const loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Fixed: Await the bcrypt check
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
@@ -73,30 +72,25 @@ export const forgotPassword = async (req, res) => {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
-    // Always respond with success to prevent email enumeration
     if (!user) {
       return res.status(200).json({
         message: "If an account with that email exists, a password reset link has been sent.",
       });
     }
 
-    // Generate random reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
 
-    // Hash token before saving to database for security
     const resetPasswordToken = crypto
       .createHash("sha256")
       .update(resetToken)
       .digest("hex");
 
-    // Set token expiration (e.g., 1 hour)
     user.resetPasswordToken = resetPasswordToken;
-    user.resetPasswordExpires = Date.now() + 3600000;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
-    // Send email using Nodemailer / Resend / SendGrid (implement your email utility here)
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-    // await sendEmail({ to: user.email, subject: "Password Reset", text: resetUrl });
+    // TODO: Send email here using your email service (e.g. Nodemailer/Resend)
 
     return res.status(200).json({
       message: "If an account with that email exists, a password reset link has been sent.",
@@ -112,7 +106,6 @@ export const resetPassword = async (req, res) => {
     const { token } = req.params;
     const { password } = req.body;
 
-    // Hash incoming token to match stored hash
     const resetPasswordToken = crypto
       .createHash("sha256")
       .update(token)
@@ -127,7 +120,6 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ message: "Invalid or expired password reset token" });
     }
 
-    // Update password and clear reset fields
     user.password = await bcrypt.hash(password, 10);
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
