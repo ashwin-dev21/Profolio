@@ -131,25 +131,25 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-// // GET: /api/users/data
-// export const getUserById = async (req, res) => {
-//   try {
-//     const user = await User.findById(req.userId).select("-password");
-//     if (!user) {
-//       return res.status(404).json({ message: "User not found" });
-//     }
-//     return res.status(200).json(user);
-//   } catch (error) {
-//     return res.status(500).json({ message: error.message });
-//   }
-// };
+// GET: /api/users/data
+export const getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
-// // GET: /api/users/resumes
-// export const getUserResumes = async (req, res) => {
-//   try {
-//     const resumes = await Resume.find({ userId: req.userId });
-//     return res.status(200).json({ resumes });
-//   } catch (error) {
-//     return res.status(500).json({ message: error.message });
-//   }
-// };
+// GET: /api/users/resumes
+export const getUserResumes = async (req, res) => {
+  try {
+    const resumes = await Resume.find({ userId: req.userId });
+    return res.status(200).json({ resumes });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
