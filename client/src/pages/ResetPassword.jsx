@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../configs/api"; // or import axios from "axios"
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -22,15 +22,18 @@ const ResetPassword = () => {
     setMessage({ text: "", isError: false });
 
     try {
-      const { data } = await axios.post(`/api/users/reset-password/${token}`, {
+      // MAKE SURE the endpoint path matches /api/users/reset-password/:token
+      const { data } = await api.post(`/api/users/reset-password/${token}`, {
         password,
       });
 
       setMessage({ text: data.message, isError: false });
+      
       setTimeout(() => {
-        navigate("/login");
+        navigate("/");
       }, 2000);
     } catch (err) {
+      // Displays the exact error response from your backend controller
       setMessage({
         text: err.response?.data?.message || "Failed to reset password",
         isError: true,
@@ -87,7 +90,7 @@ const ResetPassword = () => {
         </form>
 
         <div className="mt-4">
-          <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-indigo-600">
+          <Link to="/" className="text-sm font-medium text-slate-600 hover:text-indigo-600">
             Back to Login
           </Link>
         </div>

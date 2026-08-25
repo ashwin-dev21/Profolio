@@ -2,9 +2,9 @@
 import axios from "axios";
 
 const api = axios.create({
-  // During development (npm run dev), we want the baseURL to be '/'
-  // In production, we'll use an environment variable.
-  baseURL: import.meta.env.MODE === 'development' ? '/' : import.meta.env.VITE_BASE_URL,
+  baseURL: import.meta.env.MODE === 'development' 
+    ? 'http://localhost:5000' 
+    : import.meta.env.VITE_BASE_URL,
 });
 
 export default api;

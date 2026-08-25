@@ -6,12 +6,15 @@ import Resume from "../models/Resume.js";
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // Use SSL
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS, // 16-character code without spaces
   },
 });
+
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "7d",
@@ -100,29 +103,21 @@ export const forgotPassword = async (req, res) => {
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
-    // Send the email
     const mailOptions = {
       from: `"Resume Builder" <${process.env.EMAIL_USER}>`,
       to: user.email,
       subject: "Password Reset Request",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
-          <h2 style="color: #0f172a; text-align: center;">Reset Your Password</h2>
-          <p style="color: #475569; font-size: 14px;">You requested a password reset. Click the button below to update your password. This link is valid for 1 hour.</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${resetUrl}" style="background-color: #6366f1; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 25px; display: inline-block;">Reset Password</a>
-          </div>
-          <p style="color: #94a3b8; font-size: 12px; text-align: center;">If you didn't request this, you can safely ignore this email.</p>
-        </div>
-      `,
+      html: `<p>Click <a href="${resetUrl}">here</a> to reset your password.</p>`,
     };
 
+    // Send email inside try block
     await transporter.sendMail(mailOptions);
 
     return res.status(200).json({
       message: "If an account with that email exists, a password reset link has been sent.",
     });
   } catch (error) {
+    console.error("Forgot Password Error:", error); // Log full error in Node terminal
     return res.status(500).json({ message: error.message });
   }
 };
@@ -144,12 +139,18 @@ export const resetPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid or expired password reset token" });
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired password reset token" });
     }
 
+    // Hash and update password
     user.password = await bcrypt.hash(password, 10);
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+
+    // FIX: Set to null so Mongoose explicitly clears these fields in MongoDB
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+
     await user.save();
 
     return res.status(200).json({ message: "Password reset successful" });
@@ -157,7 +158,6 @@ export const resetPassword = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
 // GET: /api/users/data
 export const getUserById = async (req, res) => {
   try {
