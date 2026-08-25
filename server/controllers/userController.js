@@ -3,7 +3,15 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import Resume from "../models/Resume.js";
+import nodemailer from "nodemailer";
 
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "7d",
@@ -67,6 +75,7 @@ export const loginUser = async (req, res) => {
 };
 
 // POST: /api/users/forgot-password
+// Create Nodemailer Transporter
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -90,7 +99,25 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-    // TODO: Send email here using your email service (e.g. Nodemailer/Resend)
+
+    // Send the email
+    const mailOptions = {
+      from: `"Resume Builder" <${process.env.EMAIL_USER}>`,
+      to: user.email,
+      subject: "Password Reset Request",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;">
+          <h2 style="color: #0f172a; text-align: center;">Reset Your Password</h2>
+          <p style="color: #475569; font-size: 14px;">You requested a password reset. Click the button below to update your password. This link is valid for 1 hour.</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${resetUrl}" style="background-color: #6366f1; color: white; padding: 12px 24px; text-decoration: none; font-weight: bold; border-radius: 25px; display: inline-block;">Reset Password</a>
+          </div>
+          <p style="color: #94a3b8; font-size: 12px; text-align: center;">If you didn't request this, you can safely ignore this email.</p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
 
     return res.status(200).json({
       message: "If an account with that email exists, a password reset link has been sent.",
