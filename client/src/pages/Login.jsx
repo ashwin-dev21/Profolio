@@ -28,10 +28,8 @@ const Login = () => {
         "forgot-password": "/api/users/forgot-password",
       };
 
-      const { data } = await api.post(
-        `http://localhost:5000${endpointMap[state]}`,
-        formData
-      );
+      // Uses configured relative endpoint via Axios instance
+      const { data } = await api.post(endpointMap[state], formData);
 
       toast.success(data.message);
 

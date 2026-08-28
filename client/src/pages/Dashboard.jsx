@@ -30,12 +30,9 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
-  // BASE URL helper to keep endpoints targeting the correct backend server port
-  const BACKEND_URL = "http://localhost:5000";
-
   const loadAllResumes = async () => {
     try {
-      const { data } = await api.get(`${BACKEND_URL}/api/users/resumes`, {
+      const { data } = await api.get("/api/users/resumes", {
         headers: { Authorization: token },
       });
 
@@ -51,7 +48,7 @@ const Dashboard = () => {
     try {
       event.preventDefault();
       const { data } = await api.post(
-        `${BACKEND_URL}/api/resumes/create`,
+        "/api/resumes/create",
         { title },
         { headers: { Authorization: token } }
       );
@@ -74,7 +71,7 @@ const Dashboard = () => {
       const resumeText = await pdfToText(resume);
 
       const { data } = await api.post(
-        `${BACKEND_URL}/api/ai/upload-resume`,
+        "/api/ai/upload-resume",
         { title, resumeText },
         { headers: { Authorization: token } }
       );
@@ -94,7 +91,7 @@ const Dashboard = () => {
     try {
       event.preventDefault();
       const { data } = await api.put(
-        `${BACKEND_URL}/api/resumes/update`,
+        "/api/resumes/update",
         { resumeId: editResumeId, resumeData: { title } },
         {
           headers: { Authorization: token },
@@ -123,7 +120,7 @@ const Dashboard = () => {
         "Are you sure you want to delete this resume?"
       );
       if (confirm) {
-        const { data } = await api.delete(`${BACKEND_URL}/api/resumes/delete/${resumeId}`, {
+        const { data } = await api.delete(`/api/resumes/delete/${resumeId}`, {
           headers: { Authorization: token },
         });
 

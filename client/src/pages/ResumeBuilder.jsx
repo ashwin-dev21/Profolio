@@ -49,7 +49,6 @@ const ResumeBuilder = () => {
   const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [removeBackground, setRemoveBackground] = useState(false);
 
-  // New states
   const [loadingResume, setLoadingResume] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -69,7 +68,7 @@ const ResumeBuilder = () => {
   // ===========================
   const loadExistingResume = async () => {
     try {
-      const { data } = await api.get(`http://localhost:5000/api/resumes/get/${resumeId}`, {
+      const { data } = await api.get(`/api/resumes/get/${resumeId}`, {
         headers: {
           Authorization: token,
         },
@@ -96,7 +95,6 @@ const ResumeBuilder = () => {
   // SAVE RESUME
   // ===========================
   const saveResume = async (showToast = false) => {
-
     try {
       setIsSaving(true);
 
@@ -112,10 +110,7 @@ const ResumeBuilder = () => {
       const formData = new FormData();
 
       formData.append("resumeId", resumeId);
-      formData.append(
-        "resumeData",
-        JSON.stringify(updatedResumeData)
-      );
+      formData.append("resumeData", JSON.stringify(updatedResumeData));
 
       if (removeBackground) {
         formData.append("removeBackground", "yes");
@@ -125,22 +120,15 @@ const ResumeBuilder = () => {
         resumeData.personal_info?.image &&
         typeof resumeData.personal_info.image === "object"
       ) {
-        formData.append(
-          "image",
-          resumeData.personal_info.image
-        );
+        formData.append("image", resumeData.personal_info.image);
       }
 
-      const { data } = await api.put(
-        "http://localhost:5000/api/resumes/update",
-        formData,
-        {
-          headers: {
-            Authorization: token,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const { data } = await api.put("/api/resumes/update", formData, {
+        headers: {
+          Authorization: token,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setResumeData(data.resume);
 
@@ -151,15 +139,12 @@ const ResumeBuilder = () => {
       console.log(error);
 
       if (showToast) {
-        toast.error(
-          error?.response?.data?.message || error.message
-        );
+        toast.error(error?.response?.data?.message || error.message);
       }
     } finally {
       setIsSaving(false);
     }
   };
-
 
   // ===========================
   // CHANGE VISIBILITY
@@ -169,7 +154,6 @@ const ResumeBuilder = () => {
       const formData = new FormData();
 
       formData.append("resumeId", resumeId);
-
       formData.append(
         "resumeData",
         JSON.stringify({
@@ -177,16 +161,12 @@ const ResumeBuilder = () => {
         })
       );
 
-      const { data } = await api.put(
-        "http://localhost:5000/api/resumes/update",
-        formData,
-        {
-          headers: {
-            Authorization: token,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const { data } = await api.put("/api/resumes/update", formData, {
+        headers: {
+          Authorization: token,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setResumeData((prev) => ({
         ...prev,
@@ -195,9 +175,7 @@ const ResumeBuilder = () => {
 
       toast.success(data.message);
     } catch (error) {
-      toast.error(
-        error?.response?.data?.message || error.message
-      );
+      toast.error(error?.response?.data?.message || error.message);
     }
   };
 
@@ -235,10 +213,9 @@ const ResumeBuilder = () => {
           {/* Left Panel - Form */}
           <div className="relative lg:col-span-5 rounded-lg overflow-hidden">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 pt-1">
-              {/* Progress bar using activeSectionIndex */}
               <hr className="absolute top-0 left-0 right-0 border-2 border-gray-200" />
               <hr
-                className="absolute top-0 left-0 h-1 bg-linear-to-r from-green-500 to-green-600 border-none transition-all duration-2000"
+                className="absolute top-0 left-0 h-1 bg-linear-to-r from-blue-500 to-blue-600 border-none transition-all duration-2000"
                 style={{
                   width: `${
                     (activeSectionIndex * 100) / (sections.length - 1)
@@ -293,9 +270,17 @@ const ResumeBuilder = () => {
                     className={`flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all ${
                       activeSectionIndex === sections.length - 1 && "opacity-50"
                     }`}
-                    disabled={activeSectionIndex === sections.length - 1 || isSaving}
+                    disabled={
+                      activeSectionIndex === sections.length - 1 || isSaving
+                    }
                   >
-                    {isSaving ? "Saving..." : <>Next <ChevronRight className="size-4" /></>}
+                    {isSaving ? (
+                      "Saving..."
+                    ) : (
+                      <>
+                        Next <ChevronRight className="size-4" />
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
